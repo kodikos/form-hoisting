@@ -1,68 +1,36 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Duplicate state to preserve encapsulation?
 
-## Available Scripts
+I have a quandry about ReactJS that I am exploring in this repo. I have a form that I want to have live update a preview component, creating a truly WYSIWYG interface. I create the form first, where I have already set up a state object to manage all the form variables, pretty typical approach.
 
-In the project directory, you can run:
+When it comes to live updating the preview, I am faced with how to communicate the update to the preview. The most react-y approach is to pass the object from the form in an event to the preview's props. The other react-y approach is to hoist state upwards, thus making the live updating data available to the preview via the parent of both the preview and form. State must be held in the parent for this to work properly.
 
-### `npm start`
+However, this leads to an issue doing this with forms. Do I actually remove the state management from the form to put it in the parent? Or do I duplicate the state to preserve the encapsulation of the form? I think there are several factors that affect this decision:
+- How easy is it for errors and bugs to creep in?
+- How performant is it?
+- How complex is the form state management?
+- How does this change the nature of the form interface?
+- How appropriate is it to change a form's implementation to make it work in a particular context?
+- How portable is the code afterwards?
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+In this very simple example, there's probably not a lot in it. But I found this problem whilst dealing with a form (okay I'll admit, I wrote it!) with 30+ fields of different types, with complex create/update routines, and a preview built from the code that builds the static site! In that situation, legibility, flexibility and performance can count. Forms, though, tend to be very unlikely to be reused; A login form is about the most likely to be reused. But after that, it's almost always a rewrite, and the only reuse might be input wrapper components or behaviours.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+# How this code is organised
 
-### `npm test`
+I have split out the demonstration across PRs/branches. Master is the base implementation from which I make changes. Please see the PR's for explanations of the different approaches. The data models a really simple movie list, but I represent the objects passed around the app as _Entities_.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+There are 5 components
+- **App** - Top level of the app, with responsibility for routing
+- **EntitySelector** - A component sitting outside routing to allow you to select entities
+- **EntityEditor** - Parent for the form and preview panes, I want this to remain non-stateful
+- **EntityForm** - The form pane
+- **EntityPreview** - The preview pane
 
-### `npm run build`
+# How to run
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+This is a create-react-app, so to get kicked off:
+```
+npm install
+npm start
+```
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+On the master branch you will start off with just the selector list. This will allow you to view data by clicking on items on the selector list, but it will feel broken because changing the form data will not do anything.
