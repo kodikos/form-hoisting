@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const EntityFormWrapper = styled.form`
@@ -7,13 +7,7 @@ const EntityFormWrapper = styled.form`
   height: 30vh;
 `;
 
-export default function EntityForm({ routedEntity }) {
-  const [ entity, setEntity ] = useState(routedEntity);
-
-  //  This listens for changes in the selected entity to switch to it
-  useEffect(() => {
-    setEntity(routedEntity);
-  }, [ routedEntity]);
+export default function EntityForm({ routedEntity: entity, onChange, onSave }) {
 
   //  This provides the basic "managed" component implementation
   function onFieldChange({ target }) {
@@ -21,11 +15,16 @@ export default function EntityForm({ routedEntity }) {
     const { type, name, checked, value } = target;
     const actualValue = type === 'checkbox' ? checked : value;
 
-    setEntity({ ...entity, [name]: actualValue });
+    onChange(name, actualValue);
+  }
+
+  function onFormSave(e) {
+    e.preventDefault();
+    onSave && onSave();
   }
 
   return (
-    <EntityFormWrapper onSubmit={(e) => e.preventDefault()}>
+    <EntityFormWrapper onSubmit={onFormSave}>
       <div key="movie">
         <label htmlFor="movie">Movie Title</label>
         <input
