@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import EntityForm from './EntityForm';
@@ -10,13 +10,25 @@ const FormWrapper = styled.div`
   flex-direction: column;
 `;
 
-export default ({ routedEntity }) => (
-  <FormWrapper>
-    <EntityForm routedEntity={routedEntity}>
-      Entity Form
-    </EntityForm>
-    <EntityPreview entity={routedEntity}>
-      Entity Preview
-    </EntityPreview>
-  </FormWrapper>
-);
+export default ({ routedEntity, onSave }) => {
+  const [ entity, setEntity ] = useState(routedEntity);
+
+  useEffect(() => {
+    setEntity(routedEntity);
+  }, [ routedEntity]);
+
+  return (
+    <FormWrapper>
+      <EntityForm
+        routedEntity={routedEntity}
+        onChange={(ent) => setEntity(ent)}
+        onSave={(ent) => onSave && onSave(ent)}
+      >
+        Entity Form
+      </EntityForm>
+      <EntityPreview entity={entity}>
+        Entity Preview
+      </EntityPreview>
+    </FormWrapper>
+  );
+}

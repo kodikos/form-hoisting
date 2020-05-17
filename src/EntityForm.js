@@ -7,7 +7,7 @@ const EntityFormWrapper = styled.form`
   height: 30vh;
 `;
 
-export default function EntityForm({ routedEntity }) {
+export default function EntityForm({ routedEntity, onChange, onSave }) {
   const [ entity, setEntity ] = useState(routedEntity);
 
   //  This listens for changes in the selected entity to switch to it
@@ -21,11 +21,18 @@ export default function EntityForm({ routedEntity }) {
     const { type, name, checked, value } = target;
     const actualValue = type === 'checkbox' ? checked : value;
 
-    setEntity({ ...entity, [name]: actualValue });
+    const newEntity = { ...entity, [name]: actualValue };
+    setEntity(newEntity);
+    onChange && onChange(newEntity);
+  }
+
+  function onFormSave(e) {
+    e.preventDefault();
+    onSave && onSave(entity);
   }
 
   return (
-    <EntityFormWrapper onSubmit={(e) => e.preventDefault()}>
+    <EntityFormWrapper onSubmit={onFormSave}>
       <div key="movie">
         <label htmlFor="movie">Movie Title</label>
         <input
