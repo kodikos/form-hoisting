@@ -34,3 +34,6 @@ npm start
 ```
 
 On the master branch you will start off with just the selector list. This will allow you to view data by clicking on items on the selector list, but it will feel broken because changing the form data will not do anything.
+
+Warning: I am not running dependabot on this repo. Please be careful when you install this example. Run `npm audit` to be sure there are no critical vulnerabilities before running.
+
